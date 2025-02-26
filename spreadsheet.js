@@ -5,69 +5,70 @@ document.addEventListener("DOMContentLoaded", function () {
     let numCols = DEFAULT_COLS;
     const spreadsheetContainer = document.getElementById("spreadsheet-container");
   
-    // Storage for cell data: key is a cell ID (e.g., 'A1'), value is the raw text or a formula string.
+    // Storage for cell data: key is a cell ID (e.g., 'A1'), value is raw text or a formula string.
     let cellData = {};
+    let selectedCellId = null;
   
-    // Function to build the grid/table
+    // Build the initial grid
     function buildGrid() {
       spreadsheetContainer.innerHTML = "";
       const table = document.createElement("table");
   
       // Create column headers (first row)
-      const headerRow = document.createElement("tr");
-      const cornerTh = document.createElement("th");
+      let headerRow = document.createElement("tr");
+      let cornerTh = document.createElement("th");
       headerRow.appendChild(cornerTh);
       for (let c = 0; c < numCols; c++) {
-        const th = document.createElement("th");
-        th.innerText = String.fromCharCode(65 + c); // A, B, C, ...
+        let th = document.createElement("th");
+        th.innerText = String.fromCharCode(65 + c); // Column letters (A, B, C, ...)
         headerRow.appendChild(th);
       }
       table.appendChild(headerRow);
   
       // Create data rows with cells
       for (let r = 1; r <= numRows; r++) {
-        const tr = document.createElement("tr");
+        let tr = document.createElement("tr");
   
-        // Row header (display row number)
-        const rowHeader = document.createElement("th");
-        rowHeader.innerText = r;
-        tr.appendChild(rowHeader);
+        // Row header
+        let th = document.createElement("th");
+        th.innerText = r; // Row numbers (1, 2, 3, ...)
+        tr.appendChild(th);
   
-        // Create each cell in the row
         for (let c = 0; c < numCols; c++) {
-          const td = document.createElement("td");
-          const cellId = String.fromCharCode(65 + c) + r; // e.g., "A1", "B2"
+          let td = document.createElement("td");
+          let cellId = String.fromCharCode(65 + c) + r; // Cell ID (e.g., A1, B2)
           if (!(cellId in cellData)) {
-            cellData[cellId] = "";
+            cellData[cellId] = ""; // Initialize cell data
           }
   
-          // Create an input element for the cell
-          const input = document.createElement("input");
+          // Create input element for editing the cell’s content
+          let input = document.createElement("input");
           input.type = "text";
           input.value = cellData[cellId];
           input.dataset.cellId = cellId;
           input.classList.add("cell-input");
   
-          // Save cell data whenever it changes (on blur/change)
-          input.addEventListener("change", function () {
-            cellData[cellId] = input.value;
-            recalcCells(); // Attempt to recalc formulas if needed
+          // When a cell gains focus, update the formula bar and mark it as selected
+          input.addEventListener("focus", function () {
+            removeCellSelection();
+            selectedCellId = cellId;
+            td.classList.add("selected");
+            document.getElementById("formula-bar").value = cellData[cellId];
           });
   
-          // Handle the Enter key:
-          // Save the current cell's value and move focus to the cell in the same column of the next row.
+          // On pressing Enter, save the value and move to the next row
           input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
-              event.preventDefault(); // Prevent default behavior (like form submission)
-              cellData[cellId] = input.value; // Save current value
-              recalcCells(); // Recalculate formulas if needed
+              event.preventDefault(); // Prevent default form submission behavior
+              saveCellValue(input); // Save the current value
   
-              // Extract the current cell's column letter(s) and row number using regex
-              const match = cellId.match(/^([A-Z]+)(\d+)$/);
+              // Move focus to the next row in the same column
+              let match = cellId.match(/^([A-Z]+)(\d+)$/); // Extract column and row from cell ID
               if (match) {
-                const colLetters = match[1];
-                const currentRow = parseInt(match[2]);
-                const nextRow = currentRow + 1;
+                let colLetters = match[1];
+                let currentRow = parseInt(match[2]);
+                let nextRow = currentRow + 1;
+  
                 if (nextRow <= numRows) {
                   const nextCellId = colLetters + nextRow;
                   const nextInput = document.querySelector(`input[data-cell-id="${nextCellId}"]`);
@@ -89,71 +90,72 @@ document.addEventListener("DOMContentLoaded", function () {
       spreadsheetContainer.appendChild(table);
     }
   
-    // Function to recalculate cells containing formulas.
-    // (This is a placeholder; the actual evaluateFormula function can be defined in utility.js.)
+    // Save the value of a cell into `cellData`
+    function saveCellValue(input) {
+      const cellId = input.dataset.cellId;
+      if (cellId) {
+        cellData[cellId] = input.value;
+        recalcCells(); // Recalculate formulas if needed
+      }
+    }
+  
+    // Remove "selected" styling from all cells
+    function removeCellSelection() {
+      document.querySelectorAll(".selected").forEach((td) => td.classList.remove("selected"));
+    }
+  
+    // Recalculate cells containing formulas (those starting with "=")
     function recalcCells() {
-      for (const cellId in cellData) {
-        const value = cellData[cellId];
+      for (let cellId in cellData) {
+        let value = cellData[cellId];
         if (typeof value === "string" && value.startsWith("=")) {
-          const result = evaluateFormula(value, cellData);  // Assume evaluateFormula() is defined elsewhere.
-          // Keep the formula in cellData but update the displayed value.
+          const result = evaluateFormula(value, cellData);
           const inputElement = document.querySelector(`input[data-cell-id="${cellId}"]`);
           if (inputElement) {
-            inputElement.value = result;
+            inputElement.value = result; // Update displayed value
           }
         }
       }
     }
   
-    // Function to add a new row at the bottom of the grid
-    function addRow() {
-      numRows++;
-      buildGrid();
-    }
+    // Formula evaluation logic (basic implementation)
+    function evaluateFormula(formula, data) {
+      try {
+        const trimmedFormula = formula.slice(1).trim(); // Remove "=" sign
+        const fnMatch = trimmedFormula.match(/^(\w+)\((.*)\)$/); // Match function name and arguments
   
-    // Function to delete the last row (if more than one row exists)
-    function deleteRow() {
-      if (numRows > 1) {
-        // Remove the data for each cell in the last row
-        for (let c = 0; c < numCols; c++) {
-          const cellId = String.fromCharCode(65 + c) + numRows;
-          delete cellData[cellId];
+        if (!fnMatch) return "ERROR"; // Invalid formula syntax
+  
+        const fnName = fnMatch[1].toLowerCase();
+        const argsStr = fnMatch[2];
+        const argsList = argsStr.split(",").map((arg) => arg.trim());
+  
+        const values = argsList.map((arg) => parseFloat(data[arg]) || 0); // Get values from `cellData`
+        
+        switch (fnName) {
+          case "sum":
+            return values.reduce((acc, val) => acc + val, 0);
+          case "average":
+            return values.reduce((acc, val) => acc + val, 0) / values.length || "N/A";
+          case "max":
+            return Math.max(...values);
+          case "min":
+            return Math.min(...values);
+          case "count":
+            return values.filter((val) => !isNaN(val)).length;
+          default:
+            return "UNKNOWN FUNCTION";
         }
-        numRows--;
-        buildGrid();
-      } else {
-        alert("Cannot delete the last row!");
+      } catch (error) {
+        return "ERROR";
       }
     }
   
-    // Function to add a new column on the right side of the grid
-    function addColumn() {
-      numCols++;
-      buildGrid();
-    }
-  
-    // Function to delete the last column (if more than one column exists)
-    function deleteColumn() {
-      if (numCols > 1) {
-        // Remove data for each cell in the last column:
-        for (let r = 1; r <= numRows; r++) {
-          const cellId = String.fromCharCode(65 + numCols - 1) + r;
-          delete cellData[cellId];
-        }
-        numCols--;
-        buildGrid();
-      } else {
-        alert("Cannot delete the last column!");
-      }
-    }
-  
-    // Attach event listeners to the Add/Delete row/column buttons
-    document.getElementById("add-row").addEventListener("click", addRow);
-    document.getElementById("delete-row").addEventListener("click", deleteRow);
-    document.getElementById("add-column").addEventListener("click", addColumn);
-    document.getElementById("delete-column").addEventListener("click", deleteColumn);
-  
-    // Initially build the grid when the page loads
+    // Build initial grid on page load
     buildGrid();
   });
+
   
+
+
+  //P1
