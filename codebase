@@ -1,0 +1,31 @@
+project-root/
+├── assignment1/                  # Google Sheets-like web application
+│   ├── src/                      # Source code directory
+│   │   ├── components/           # Reusable UI components
+│   │   │   ├── Toolbar.js        # Toolbar component
+│   │   │   ├── FormulaBar.js     # Formula bar component
+│   │   │   ├── Spreadsheet.js    # Main spreadsheet component
+│   │   │   └── Cell.js           # Individual cell component
+│   │   ├── styles/               # CSS or SCSS styles for the app
+│   │   │   ├── global.css        # Global styles
+│   │   │   └── spreadsheet.css   # Spreadsheet-specific styles
+│   │   ├── utils/                # Utility functions
+│   │   │   └── formulas.js       # Mathematical and data quality functions
+│   │   ├── index.html            # Main HTML file
+│   │   └── app.js                # Entry point for the application
+│   └── package.json              # npm dependencies and scripts for Assignment 1
+├── assignment2/                  # CDP chatbot application
+│   ├── src/                      # Source code directory
+│   │   ├── bot/                  # Chatbot logic
+│   │   │   ├── bot.js            # Main chatbot logic
+│   │   │   └── questionParser.js # NLP or rule-based question parser
+│   │   ├── docs/                 # Documentation scrapers or static docs
+│   │   ├── styles/               # CSS or SCSS styles for the chatbot interface
+│   │   ├── components/           # Reusable UI components (chat window, input field)
+│   │   └── app.js                # Entry point for the chatbot application
+│   └── package.json              # npm dependencies and scripts for Assignment 2
+├── shared/                       # Shared utilities or assets between assignments
+│    └── config/                  # Shared configuration files (e.g., ESLint, Prettier)
+├── build-scripts/                # Build and deployment scripts for both assignments
+├── README.md                     # Documentation for the entire project
+└── .gitignore                    # Ignore unnecessary files in version control
