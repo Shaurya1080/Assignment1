@@ -1,0 +1,130 @@
+/* Global Styles */
+body {
+    background: linear-gradient(135deg, #f3f9ff, #e0f7fa);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  /* Attractive Header */
+  .attractive-header {
+    background: linear-gradient(90deg, #2193b0, #6dd5ed);
+    color: #fff;
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  .attractive-header .logo {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  .attractive-header .header-controls button {
+    margin-left: 10px;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .attractive-header .header-controls button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+  
+  /* Toolbar Styling */
+  #toolbar {
+    background-color: #fff;
+    border-bottom: 2px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  #toolbar button {
+    transition: background 0.3s;
+  }
+  #toolbar button:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Formula Bar Styling */
+  #formula-bar-container {
+    background: #fafafa;
+    padding: 10px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  #formula-bar-container input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    transition: border 0.3s;
+  }
+  #formula-bar-container input:focus {
+    border-color: #2193b0;
+    outline: none;
+  }
+  
+  /* Spreadsheet Container */
+  #spreadsheet-container {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 8px;
+    overflow: auto;
+    max-height: calc(100vh - 300px);
+  }
+  
+  /* Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    position: relative;
+    transition: background 0.3s;
+  }
+  th {
+    background: #f0f0f0;
+    font-weight: 600;
+  }
+  td:hover {
+    background: #f9f9f9;
+  }
+  
+  /* Selected Cell */
+  .selected {
+    outline: 2px solid #2193b0;
+    background: #e6f7ff !important;
+  }
+  
+  /* Cell Input Styling */
+  .cell-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    font-family: inherit;
+    color: inherit;
+    padding: 4px;
+    box-sizing: border-box;
+  }
+  .cell-input:focus {
+    outline: none;
+  }
+  
+  /* Resize Handle */
+  .resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 8px;
+    height: 100%;
+    cursor: col-resize;
+  }
+  
+  /* Button Styles */
+  .btn {
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
